@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de naves espaciales</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #c8ccd3;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+    }
+    div { margin-bottom: 10px; }
+    label { display: block; margin-bottom: 3px; }
+    input { width: 100%; padding: 6px; }
+    button { padding: 6px 12px; }
+  </style>
+</head>
+<body>
+
+  <form action="" id="formBuscador">
+    <div>
+      <input type="text" id="idnave" placeholder="Ejem. 9">
+      <button type="submit">Buscar</button>
+    </div>
+
+    <div>
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre">
+    </div>
+
+    <div>
+      <label for="costo">Costo en créditos:</label>
+      <input type="text" id="costo">
+    </div>
+
+    <div>
+      <label for="longitud">Longitud (m):</label>
+      <input type="text" id="longitud">
+    </div>
+
+    <div>
+      <label for="hiperimpulsor">Calificación del hiperimpulsor:</label>
+      <input type="text" id="hiperimpulsor">
+    </div>
+
+    <div>
+      <label for="tripulacion">Tripulación:</label>
+      <input type="text" id="tripulacion">
+    </div>
+  </form>
+  <script>
+    const formulario = document.getElementById('formBuscador')
+    const id = document.getElementById('idnave')
+    const nombre = document.getElementById('nombre')
+    const costo = document.getElementById('costo')
+    const longitud = document.getElementById('longitud')
+    const hiperimpulsor = document.getElementById('hiperimpulsor')
+    const tripulacion = document.getElementById('tripulacion')
+
+    formulario.addEventListener("submit", (event) => {
+      event.preventDefault()  
+
+      obtenerNave(id.value)
+    })
+
+    async function obtenerNave(id) {
+      const API_URL = `https://swapi.dev/api/starships/${id}/`
+
+      try {
+        const respuesta = await fetch(API_URL)
+        if (!respuesta.ok) {
+          if (respuesta.status === 404) {
+            nombre.value = ''
+            costo.value = ''
+            longitud.value = ''
+            hiperimpulsor.value = ''
+            tripulacion.value = ''
+            alert('No existe esta nave')
+          }
+          throw new Error(`Error de comunicación`)
+        }
+        const datos = await respuesta.json()
+        nombre.value = datos.name
+        costo.value = datos.cost_in_credits
+        longitud.value = datos.length
+        hiperimpulsor.value = datos.hyperdrive_rating
+        tripulacion.value = datos.crew
+
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  </script>
+</body>
+</html>

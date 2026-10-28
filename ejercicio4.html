@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Pokémon</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #c8ccd3;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+    }
+    div { margin-bottom: 10px; }
+    label { display: block; margin-bottom: 3px; }
+    input { width: 100%; padding: 6px; box-sizing: border-box; }
+    button { padding: 6px 12px; }
+    img { max-width: 100%; max-height: 300px; display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+  <form action="" id="formBuscador">
+    <div>
+      <input type="text" id="idpokemon" placeholder="Ejem. 25 o pikachu">
+      <button type="submit">Buscar</button>
+    </div>
+
+    <div>
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre">
+    </div>
+
+    <div>
+      <label for="altura">Altura:</label>
+      <input type="text" id="altura">
+    </div>
+
+    <div>
+      <label for="peso">Peso:</label>
+      <input type="text" id="peso">
+    </div>
+
+    <div>
+      <label for="experiencia">Experiencia base:</label>
+      <input type="text" id="experiencia">
+    </div>
+
+    <div>
+      <label>Imagen:</label>
+      <img id="imagen" src="" alt="">
+    </div>
+  </form>
+
+  <script>
+
+    const formulario = document.getElementById('formBuscador')
+    const id = document.getElementById('idpokemon')
+    const nombre = document.getElementById('nombre')
+    const altura = document.getElementById('altura')
+    const peso = document.getElementById('peso')
+    const experiencia = document.getElementById('experiencia')
+    const imagen = document.getElementById('imagen')
+
+    formulario.addEventListener("submit", (event) => {
+      event.preventDefault()  //Detener el envio
+
+      obtenerPokemon(id.value.trim().toLowerCase())
+    })
+
+    function limpiar() {
+      nombre.value = ''
+      altura.value = ''
+      peso.value = ''
+      experiencia.value = ''
+      imagen.removeAttribute('src')
+    }
+
+    async function obtenerPokemon(id) {
+      const API_URL = `https://pokeapi.co/api/v2/pokemon/${id}`
+
+      try {
+        const respuesta = await fetch(API_URL)
+
+        if (!respuesta.ok) {
+          limpiar()
+          alert('No existe este Pokémon')
+          throw new Error(`Error de comunicación: ${respuesta.status}`)
+        }
+
+        const datos = await respuesta.json()
+
+        if (!datos.name) {
+          limpiar()
+          alert('No existe este Pokémon')
+          return
+        }
+
+        nombre.value = datos.name
+        altura.value = datos.height
+        peso.value = datos.weight
+        experiencia.value = datos.base_experience
+        imagen.src = datos.sprites.front_default
+        imagen.alt = datos.name
+
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  </script>
+</body>
+</html>
